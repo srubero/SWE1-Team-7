@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System</title>
+    <link rel="stylesheet" href="../shared/tabs.css">
+    <link rel="stylesheet" href="addition.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Management System</h1>
+        
+        <!-- Tabbed Navigation -->
+        <div class="tabs-container">
+            <ul class="tabs">
+                <li><a href="addition.html" class="active">Add Item</a></li>
+                <li><a href="../search/search.html">Search Inventory</a></li>
+            </ul>
+        </div>
+        
+        <div class="inventory-report">
+            <h2>Inventory Report Summary</h2>
+            <div class="report-content">
+                <p>Report generated on: <span id="reportDate">April 10, 2025</span></p>
+                <p>Total items in inventory: <span id="totalItems">5</span></p>
+                <p>Items below threshold: <span id="lowItems">1</span></p>
+            </div>
+        </div>
+        
+        <div class="add-item-section">
+            <h2>Add New Item</h2>
+            <form id="addItemForm">
+                <div class="form-group">
+                    <label for="itemId">Item ID:</label>
+                    <input type="number" id="itemId" name="itemId" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemName">Item Name:</label>
+                    <input type="text" id="itemName" name="itemName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemDescription">Description:</label>
+                    <textarea id="itemDescription" name="itemDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemQuantity">Quantity:</label>
+                    <input type="number" id="itemQuantity" name="itemQuantity" min="1" value="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="itemPrice">Price ($):</label>
+                    <input type="number" id="itemPrice" name="itemPrice" min="0.01" step="0.01" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" id="addButton">Add Item</button>
+                    <button type="button" id="cancelButton">Cancel</button>
+                </div>
+            </form>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="inventory-table">
+            <h2>Current Inventory</h2>
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                    <!-- Inventory items will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Load the shared inventory data first - Updated path -->
+    <script src="../shared/inventory-data.js"></script>
+    <script src="addition.js"></script>
+</body>
+</html>
