@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Inventory Management System</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Inventory Management System</h1>
+        <div class="login-box">
+            <h2>Login</h2>
+            <!-- username/password -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Continue</button>
+                </div>
+            </form>
+            
+            <!-- security question  -->
+            <form id="securityForm" style="display: none;">
+                <div class="form-group">
+                    <label for="securityQuestion">Security Question:</label>
+                    <p id="questionText">What is your favorite color?</p>
+                </div>
+                <div class="form-group">
+                    <label for="securityAnswer">Answer:</label>
+                    <input type="text" id="securityAnswer" name="securityAnswer" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Login</button>
+                    <button type="button" id="backButton">Back</button>
+                </div>
+            </form>
+            
+            <div id="loginMessage" class="message"></div>
+        </div>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>
