@@ -38,4 +38,32 @@
     color: white;
 }
 
-/* Keep the rest of your existing CSS */
+
+.logout-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 20px;
+}
+
+.logout-container span {
+    margin-right: 15px;
+    color: #555;
+}
+
+.logout-button {
+    background-color: #f44336;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #d32f2f;
+}
+
