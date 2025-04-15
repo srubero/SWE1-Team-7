@@ -83,17 +83,28 @@ const inventoryData = {
         return deletedItem;
     },
     
-    // Search inventory
-    searchItems: function(query) {
-        if (!query) return [];
-        
-        const lowerCaseQuery = query.toLowerCase();
-        return inventory.filter(item => 
-            item.name.toLowerCase().includes(lowerCaseQuery) || 
-            item.id.toString().includes(lowerCaseQuery) ||
-            item.description.toLowerCase().includes(lowerCaseQuery)
-        );
-    },
+   // Search inventory
+searchItems: function(query) {
+    if (!query || query.trim() === "") {
+        throw new Error("Please enter an item name to search.");
+    }
+
+    const validNames = ["Keyboard", "Mouse", "Monitor", "Headphones", "Webcam"];
+    const formattedQuery = query.trim().toLowerCase();
+    
+    const matchedItems = inventory.filter(item =>
+        item.name.toLowerCase() === formattedQuery
+    );
+
+    const isValidName = validNames.some(name => name.toLowerCase() === formattedQuery);
+
+    if (!isValidName) {
+        throw new Error(`No item named "${query}" found in inventory.`);
+    }
+
+    return matchedItems;
+},
+
     
     // Get the next available ID
     getNextAvailableId: function() {
