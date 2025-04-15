@@ -22,6 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Inventory page functionality initialized');
     
+    // Variables to track the current item being edited
+    let currentItemId = null;
+    let currentQuantityCell = null;
+    
+    // Get the popup elements
+    const popup = document.querySelector('.quantity-popup');
+    const quantityInput = document.getElementById('quantityInput');
+    const confirmButton = document.getElementById('confirmQuantity');
+    const cancelButton = document.getElementById('cancelQuantity');
+    
     // Display all inventory items in the table
     function displayInventory(items) {
         // Clear the table
@@ -34,16 +44,151 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${item.id}</td>
                 <td>${item.name}</td>
                 <td>${item.description}</td>
-                <td>${item.quantity}</td>
+                <td class="quantity-cell" data-item-id="${item.id}">${item.quantity}</td>
                 <td>$${item.price.toFixed(2)}</td>
             `;
             
             // Add click event to show item details
-            row.addEventListener('click', () => displayItemDetails(item));
+            row.addEventListener('click', (e) => {
+                // Only show details if not clicking on quantity cell
+                if (!e.target.classList.contains('quantity-cell')) {
+                    displayItemDetails(item);
+                }
+            });
             
             inventoryTableBody.appendChild(row);
         });
+        
+        // Add click handlers to quantity cells
+        const quantityCells = document.querySelectorAll('.quantity-cell');
+        quantityCells.forEach(cell => {
+            cell.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent row click handler
+                showQuantityPopup(cell);
+            });
+        });
     }
+    
+    // Show quantity update popup
+    function showQuantityPopup(cell) {
+        currentItemId = cell.getAttribute('data-item-id');
+        currentQuantityCell = cell;
+        
+        // Position the popup near the clicked cell
+        const cellRect = cell.getBoundingClientRect();
+        popup.style.left = `${cellRect.left}px`;
+        popup.style.top = `${cellRect.top + cellRect.height}px`;
+        
+        // Set current quantity in the input
+        quantityInput.value = cell.textContent;
+        
+        // Show the popup
+        popup.style.display = 'block';
+        
+        // Focus on the input
+        quantityInput.focus();
+        quantityInput.select();
+    }
+    
+    // Update item quantity in database
+    function updateItemQuantity(itemId, newQuantity) {
+        // Convert to number and validate
+        const quantity = parseInt(newQuantity);
+        
+        // Validate that quantity is not negative
+        if (isNaN(quantity) || quantity < 0) {
+            // Display error message
+            showNotification('Negative quantities are not allowed.', 'error');
+            return false;
+        }
+        
+        try {
+            // Update the item in inventory
+            const updatedItem = inventoryData.updateItem(itemId, { quantity: quantity });
+            
+            // Update the cell with new quantity
+            if (currentQuantityCell) {
+                currentQuantityCell.textContent = updatedItem.quantity;
+            }
+            
+            // Show success notification
+            showNotification('Quantity updated successfully!', 'success');
+            
+            // If the currently displayed item details match the updated item, update them too
+            const currentItemDetails = resultText.querySelector('p:nth-child(2) strong');
+            if (currentItemDetails && currentItemDetails.textContent === 'ID:' && 
+                currentItemDetails.nextSibling.textContent.trim() === itemId) {
+                // Update quantity in the details section
+                const quantityParagraph = resultText.querySelector('p:nth-child(4)');
+                if (quantityParagraph) {
+                    quantityParagraph.innerHTML = `<strong>Quantity:</strong> ${quantity}`;
+                }
+            }
+            
+            return true;
+        } catch (error) {
+            showNotification(error.message, 'error');
+            return false;
+        }
+    }
+    
+    // Show notification for updates
+    function showNotification(message, type) {
+        // Check if a notification container exists, create one if not
+        let notificationContainer = document.querySelector('.notification-container');
+        if (!notificationContainer) {
+            notificationContainer = document.createElement('div');
+            notificationContainer.className = 'notification-container';
+            document.querySelector('.container').appendChild(notificationContainer);
+        }
+        
+        // Create and show the notification
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notificationContainer.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+    
+    // Close the popup
+    function closePopup() {
+        popup.style.display = 'none';
+        currentItemId = null;
+        currentQuantityCell = null;
+    }
+    
+    // Event listeners for the popup buttons
+    confirmButton.addEventListener('click', () => {
+        if (updateItemQuantity(currentItemId, quantityInput.value)) {
+            closePopup();
+        }
+    });
+    
+    cancelButton.addEventListener('click', closePopup);
+    
+    // Close popup when clicking outside
+    document.addEventListener('click', (e) => {
+        if (popup.style.display === 'block' && 
+            !popup.contains(e.target) && 
+            !e.target.classList.contains('quantity-cell')) {
+            closePopup();
+        }
+    });
+    
+    // Handle keyboard events for the popup
+    quantityInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (updateItemQuantity(currentItemId, quantityInput.value)) {
+                closePopup();
+            }
+        } else if (e.key === 'Escape') {
+            closePopup();
+        }
+    });
     
     // Search function to filter inventory based on input
     function searchInventory(query) {
@@ -55,44 +200,51 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Use the shared inventory data to search
-        const filteredItems = inventoryData.searchItems(query);
+        try {
+            // Use the shared inventory data to search
+            const filteredItems = inventoryData.searchItems(query);
 
-        // Clear previous suggestions
-        suggestionsList.innerHTML = '';
+            // Clear previous suggestions
+            suggestionsList.innerHTML = '';
 
-        // Show results as suggestions
-        if (filteredItems.length > 0) {
-            filteredItems.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.textContent = `${item.name} (ID: ${item.id})`;
-                listItem.addEventListener('click', () => {
-                    displayItemDetails(item);
-                    highlightTableRow(item.id);
+            // Show results as suggestions
+            if (filteredItems.length > 0) {
+                filteredItems.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${item.name} (ID: ${item.id})`;
+                    listItem.addEventListener('click', () => {
+                        displayItemDetails(item);
+                        highlightTableRow(item.id);
+                    });
+                    suggestionsList.appendChild(listItem);
                 });
-                suggestionsList.appendChild(listItem);
-            });
-            suggestionsList.style.display = 'block';
-            
-            // Update the table with filtered items
-            displayInventory(filteredItems);
-        } else {
-            // Show "no results" message
-            const noResults = document.createElement('li');
-            noResults.textContent = 'No matching items found';
-            noResults.style.fontStyle = 'italic';
-            suggestionsList.appendChild(noResults);
-            suggestionsList.style.display = 'block';
-            resultText.style.display = 'none';
-            
-            // Clear the table to show no results
-            inventoryTableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 20px;">
-                        No matching items found
-                    </td>
-                </tr>
-            `;
+                suggestionsList.style.display = 'block';
+                
+                // Update the table with filtered items
+                displayInventory(filteredItems);
+            } else {
+                // Show "no results" message
+                const noResults = document.createElement('li');
+                noResults.textContent = 'No matching items found';
+                noResults.style.fontStyle = 'italic';
+                suggestionsList.appendChild(noResults);
+                suggestionsList.style.display = 'block';
+                resultText.style.display = 'none';
+                
+                // Clear the table to show no results
+                inventoryTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">
+                            No matching items found
+                        </td>
+                    </tr>
+                `;
+            }
+        } catch (error) {
+            // Handle search errors gracefully
+            showNotification(error.message, 'error');
+            // Continue to show all items
+            displayInventory(inventoryData.getAllItems());
         }
     }
 
