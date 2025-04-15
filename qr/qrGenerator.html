@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        .qr-container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 300px;
+        }
+        .item-details {
+            margin: 20px 0;
+            text-align: left;
+        }
+        #qrcode {
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Item QR Code</h1>
+    <div class="qr-container">
+        <div class="item-details"></div>
+        <div id="qrcode"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemData = JSON.parse(decodeURIComponent(urlParams.get('data')));
+            
+            // Display item details
+            const itemDetails = document.querySelector('.item-details');
+            itemDetails.innerHTML = `
+                <p><strong>ID:</strong> ${itemData.id}</p>
+                <p><strong>Name:</strong> ${itemData.name}</p>
+                <p><strong>Description:</strong> ${itemData.description}</p>
+                <p><strong>Quantity:</strong> ${itemData.quantity}</p>
+                <p><strong>Price:</strong> $${itemData.price.toFixed(2)}</p>
+            `;
+
+            // Generate QR code
+            new QRCode(document.getElementById("qrcode"), {
+                text: JSON.stringify(itemData),
+                width: 256,
+                height: 256
+            });
+        });
+    </script>
+</body>
+</html>
