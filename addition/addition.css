@@ -153,37 +153,6 @@ button {
     color: #31708f;
 }
 
-/* Inventory Table styles */
-.inventory-table {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-table th, table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-table th {
-    background-color: #f2f2f2;
-    color: #333;
-    font-weight: bold;
-}
-
-table tr:hover {
-    background-color: #f9f9f9;
-}
-
-table tr:nth-child(even) {
-    background-color: #f5f5f5;
-}
-
 @media screen and (max-width: 768px) {
     .container {
         width: 95%;

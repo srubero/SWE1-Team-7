@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Addition functionality initialized');
     
     // Initialize the page
-    updateInventoryTable();
     updateReportSummary();
     
     // Set current date for the report
@@ -64,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             inventoryData.addItem(newItem);
             
             // Update the UI
-            updateInventoryTable();
             updateReportSummary();
             
             // Show success message
@@ -81,33 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage(`Error adding item: ${error.message}`, 'error');
             console.error('Error adding item:', error);
         }
-    }
-    
-    // Function to update the inventory table
-    function updateInventoryTable() {
-        const tableBody = document.getElementById('inventoryBody');
-        if (!tableBody) {
-            console.warn('Inventory table body not found');
-            return;
-        }
-        
-        tableBody.innerHTML = '';
-        
-        const items = inventoryData.getAllItems();
-        
-        items.forEach(item => {
-            const row = document.createElement('tr');
-            
-            row.innerHTML = `
-                <td>${item.id}</td>
-                <td>${item.name}</td>
-                <td>${item.description}</td>
-                <td>${item.quantity}</td>
-                <td>$${item.price.toFixed(2)}</td>
-            `;
-            
-            tableBody.appendChild(row);
-        });
     }
     
     // Function to update the report summary

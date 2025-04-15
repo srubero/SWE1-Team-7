@@ -1,4 +1,4 @@
-// search/search.js - Search functionality for inventory items
+// search/search.js - Search functionality and inventory display
 
 // Wait for DOM to fully load
 document.addEventListener('DOMContentLoaded', () => {
@@ -6,10 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const suggestionsList = document.getElementById('suggestions');
     const resultText = document.getElementById('resultText');
+    const inventoryTableBody = document.getElementById('inventoryTableBody');
     
-    // Exit if we're not on the search page
-    if (!searchInput || !suggestionsList || !resultText) {
-        console.log('Search page elements not found, skipping search initialization');
+    // Exit if we're not on the inventory page
+    if (!searchInput || !suggestionsList || !resultText || !inventoryTableBody) {
+        console.log('Inventory page elements not found, skipping initialization');
         return;
     }
 
@@ -19,16 +20,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    console.log('Search functionality initialized');
+    console.log('Inventory page functionality initialized');
     
-    // Optional: Display the current inventory for debugging
-    console.log('Current inventory:', inventoryData.getAllItems());
-
+    // Display all inventory items in the table
+    function displayInventory(items) {
+        // Clear the table
+        inventoryTableBody.innerHTML = '';
+        
+        // Add each item to the table
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.description}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.price.toFixed(2)}</td>
+            `;
+            
+            // Add click event to show item details
+            row.addEventListener('click', () => displayItemDetails(item));
+            
+            inventoryTableBody.appendChild(row);
+        });
+    }
+    
     // Search function to filter inventory based on input
     function searchInventory(query) {
-        console.log('Search Query:', query); // Debugging statement
-
         if (!query) {
+            // Display all items when search is empty
+            displayInventory(inventoryData.getAllItems());
             suggestionsList.style.display = 'none';
             resultText.style.display = 'none';
             return;
@@ -36,7 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Use the shared inventory data to search
         const filteredItems = inventoryData.searchItems(query);
-        console.log('Filtered items:', filteredItems);
 
         // Clear previous suggestions
         suggestionsList.innerHTML = '';
@@ -46,10 +66,16 @@ document.addEventListener('DOMContentLoaded', () => {
             filteredItems.forEach(item => {
                 const listItem = document.createElement('li');
                 listItem.textContent = `${item.name} (ID: ${item.id})`;
-                listItem.addEventListener('click', () => displayItemDetails(item));
+                listItem.addEventListener('click', () => {
+                    displayItemDetails(item);
+                    highlightTableRow(item.id);
+                });
                 suggestionsList.appendChild(listItem);
             });
             suggestionsList.style.display = 'block';
+            
+            // Update the table with filtered items
+            displayInventory(filteredItems);
         } else {
             // Show "no results" message
             const noResults = document.createElement('li');
@@ -58,10 +84,19 @@ document.addEventListener('DOMContentLoaded', () => {
             suggestionsList.appendChild(noResults);
             suggestionsList.style.display = 'block';
             resultText.style.display = 'none';
+            
+            // Clear the table to show no results
+            inventoryTableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px;">
+                        No matching items found
+                    </td>
+                </tr>
+            `;
         }
     }
 
-    // Display full item details when clicked from suggestions
+    // Display full item details when clicked from suggestions or table
     function displayItemDetails(item) {
         resultText.innerHTML = `
             <p><strong>Item:</strong> ${item.name}</p>
@@ -73,6 +108,24 @@ document.addEventListener('DOMContentLoaded', () => {
         resultText.style.display = 'block';
         suggestionsList.style.display = 'none'; // Hide suggestions after selection
         searchInput.value = item.name; // Set the input value to the selected item
+    }
+    
+    // Highlight the selected row in the table
+    function highlightTableRow(itemId) {
+        // Remove highlight from all rows
+        const rows = inventoryTableBody.querySelectorAll('tr');
+        rows.forEach(row => row.classList.remove('highlight'));
+        
+        // Find the row with the matching ID and highlight it
+        rows.forEach(row => {
+            const idCell = row.querySelector('td:first-child');
+            if (idCell && idCell.textContent === itemId.toString()) {
+                row.classList.add('highlight');
+                
+                // Scroll to the row if needed
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
     }
 
     // Event listener for search input
@@ -149,15 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Initialize by checking if there are any initial search terms
+    // Initialize by displaying all inventory
+    displayInventory(inventoryData.getAllItems());
+    
+    // Initialize search if there's an initial search term
     if (searchInput.value.trim()) {
         searchInventory(searchInput.value.trim());
-    }
-
-    // Add a test search term for debugging (can remove in production)
-    if (!searchInput.value) {
-        console.log('Adding test search term for debugging');
-        searchInput.value = 'key'; // Will show "Keyboard" in results
-        searchInventory('key');
     }
 });

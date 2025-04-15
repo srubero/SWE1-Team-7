@@ -15,15 +15,33 @@
         <div class="tabs-container">
             <ul class="tabs">
                 <li><a href="../addition/addition.html">Add Item</a></li>
-                <li><a href="search.html" class="active">Search Inventory</a></li>
+                <li><a href="search.html" class="active">Inventory</a></li>
             </ul>
         </div>
         
-        <!-- Search input with suggestions directly underneath -->
+        <!-- Search bar in the top right -->
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Search for a part by name or ID..." autocomplete="off" />
             <!-- Suggestions List positioned under the search input -->
             <ul id="suggestions" class="suggestions-list"></ul>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="inventory-table-container">
+            <table id="inventoryTable" class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                    <!-- Inventory items will be displayed here -->
+                </tbody>
+            </table>
         </div>
 
         <!-- Display result text (full item specs) -->
