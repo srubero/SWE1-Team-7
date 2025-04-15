@@ -88,19 +88,11 @@ searchItems: function(query) {
     if (!query || query.trim() === "") {
         throw new Error("Please enter an item name to search.");
     }
-
-    const validNames = ["Keyboard", "Mouse", "Monitor", "Headphones", "Webcam"];
     const formattedQuery = query.trim().toLowerCase();
     
     const matchedItems = inventory.filter(item =>
-        item.name.toLowerCase() === formattedQuery
+        item.name.toLowerCase().includes(formattedQuery)
     );
-
-    const isValidName = validNames.some(name => name.toLowerCase() === formattedQuery);
-
-    if (!isValidName) {
-        throw new Error(`No item named "${query}" found in inventory.`);
-    }
 
     return matchedItems;
 },
