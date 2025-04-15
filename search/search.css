@@ -135,6 +135,101 @@ h1 {
     background-color: #e6f3ff;
 }
 
+/* Add the styles from search.js for the quantity popup */
+.quantity-popup {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    padding: 15px;
+}
+
+.quantity-popup-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+#quantityInput {
+    width: 80px;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.confirm-btn, .cancel-btn {
+    cursor: pointer;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+.confirm-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.quantity-cell {
+    cursor: pointer;
+    position: relative;
+}
+
+.quantity-cell:hover {
+    background-color: #f0f8ff;
+}
+
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.notification {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.success {
+    background-color: #4CAF50;
+}
+
+.error {
+    background-color: #f44336;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
 @media screen and (max-width: 768px) {
     .container {
         width: 95%;

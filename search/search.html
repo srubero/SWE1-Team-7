@@ -47,6 +47,18 @@
 
         <!-- Display result text (full item specs) -->
         <div id="resultText" class="result-text"></div>
+        
+        <!-- Quantity Popup - move from JS to HTML -->
+        <div class="quantity-popup">
+            <div class="quantity-popup-content">
+                <h3>Update Quantity</h3>
+                <input type="number" id="quantityInput" min="0">
+                <div class="popup-buttons">
+                    <button id="confirmQuantity" class="confirm-btn">✓</button>
+                    <button id="cancelQuantity" class="cancel-btn">✗</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Load the shared inventory data first - Updated path -->
