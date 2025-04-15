@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Alert System</title>
+    <link rel="stylesheet" href="../shared/tabs.css">
+    <link rel="stylesheet" href="alert.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Inventory Management System</h1>
+            <div class="user-info">
+                <span id="userRole">Manager</span>
+                <button id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+      
+        <div class="tabs-container">
+            <ul class="tabs">
+                <li><a href="../addition/addition.html">Add Item</a></li>
+                <li><a href="../search/search.html">Inventory</a></li>
+                <li><a href="alert.html" class="active">Alerts</a></li>
+            </ul>
+        </div>
+
+        <main>
+            <div class="alert-summary">
+                <div class="summary-card">
+                    <h3>Active Alerts</h3>
+                    <span id="activeAlerts">0</span>
+                </div>
+                <div class="summary-card">
+                    <h3>Items Below Threshold</h3>
+                    <span id="belowThreshold">0</span>
+                </div>
+            </div>
+
+            <div class="alert-settings">
+                <h3>Threshold Settings</h3>
+                <form id="thresholdForm">
+                    <div class="form-group">
+                        <label for="itemSelect">Select Item:</label>
+                        <select id="itemSelect" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="threshold">Minimum Threshold:</label>
+                        <input type="number" id="threshold" min="1" required>
+                    </div>
+                    <button type="submit">Set Threshold</button>
+                </form>
+            </div>
+
+            <section class="inventory-section">
+                <h2>Current Inventory Levels</h2>
+                <div class="inventory-table-container">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Current Quantity</th>
+                                <th>Threshold</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="alerts-section">
+                <h2>Active Alerts</h2>
+                <div id="alertsList" class="alerts-list">
+                </div>
+            </section>
+
+            <div class="alert-history">
+                <h3>Alert History</h3>
+                <div id="alertHistory" class="history-list">
+                </div>
+            </div>
+        </main>
+
+        <div id="reorderModal" class="modal">
+            <div class="modal-content">
+                <h2>Place Reorder</h2>
+                <form id="reorderForm">
+                    <div class="form-group">
+                        <label for="itemName">Item:</label>
+                        <input type="text" id="itemName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reorderQuantity">Quantity to Order:</label>
+                        <input type="number" id="reorderQuantity" required min="1">
+                    </div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Confirm Order</button>
+                        <button type="button" class="btn-secondary" id="cancelReorder">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="../shared/inventory-data.js"></script>
+    <script src="alert.js"></script>
+    <script src="../shared/logout-button.js"></script>
+</body>
+</html> 
