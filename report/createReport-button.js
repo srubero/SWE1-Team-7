@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const createReportDiv = document.createElement('div');
     createReportDiv.className = 'createReport-button-container';
     createReportDiv.innerHTML = `
-        <a href="../report/createReport.html" class="createReport-button">Create Report</a>
+        <a href="../report/createReport.html" target="_blank" class="createReport-button">Create Report</a>
     `;
 
     const inventoryTableContainer = document.querySelector('.inventory-table-container');
