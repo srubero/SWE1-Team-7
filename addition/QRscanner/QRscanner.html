@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Scanner</title>
+    <title>Inventory Update</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
@@ -17,6 +17,9 @@
             border: 1px solid #ccc;
             border-radius: 10px;
             overflow: hidden;
+            position: relative;
+            width: 300px;  
+            height: 300px;  
         }
 
         #result {
@@ -24,34 +27,96 @@
             font-size: 18px;
             color: #333;
         }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        pre {
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 <body>
     <h1>QR Scanner</h1>
 
-    <div id="qr-reader" style="width: 500px; height: 500px;"></div>
+    <div id="qr-reader"></div>
 
-    <p>Scan a QR code:</p>
     <div id="result"></div>
 
+    <h3>Current Inventory:</h3>
+    <pre id="inventory"></pre>
+
+    <a href="../addition.html">
+        <button style="margin-top: 20px; padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; border-radius: 4px;">Go Back</button>
+    </a>
     <script>
-        // Initialize the QR scanner
         const qrCodeReader = new Html5Qrcode("qr-reader");
 
-        // Function to start the scanner
+        // Function to update the inventory (increase quantity or add new item)
+        function updateInventory(itemData) {
+            const existingItem = inventoryData.getItemById(itemData.id);
+
+            if (existingItem) {
+                // Item exists, update quantity
+                const updatedItem = inventoryData.updateItem(itemData.id, { quantity: existingItem.quantity + itemData.quantity });
+                console.log(`Updated ${updatedItem.name} quantity to ${updatedItem.quantity}`);
+            } else {
+                // Item doesn't exist, create a new one
+                const newItem = {
+                    id: itemData.id,
+                    name: itemData.name,
+                    description: itemData.description,
+                    quantity: itemData.quantity,
+                    price: itemData.price,
+                };
+                const addedItem = inventoryData.addItem(newItem);
+                console.log(`Added new item: ${addedItem.name} with quantity ${addedItem.quantity}`);
+            }
+            displayInventory();  
+        }
+
+        // Function to display the inventory
+        function displayInventory() {
+            document.getElementById('inventory').innerText = JSON.stringify(inventoryData.getAllItems(), null, 2);
+        }
+
         function startScanner() {
+            const qrReader = document.getElementById('qr-reader');
+            const width = qrReader.offsetWidth;
+            const height = qrReader.offsetHeight;
+            const qrBoxSize = Math.min(width, height) * 0.9;
+
             qrCodeReader.start(
-                { facingMode: "environment" },  // Use the rear camera
+                { facingMode: "environment" },
                 {
-                    fps: 10,  // Frame per second for the camera
-                    qrbox: 250,  // Size of the scanning area
+                    fps: 10,
+                    qrbox: qrBoxSize,
                 },
                 (decodedText, decodedResult) => {
-                    // Display the decoded result
                     document.getElementById('result').innerText = `QR Code Detected: ${decodedText}`;
+
+                    // Parse the QR code data (which is a JSON string)
+                    try {
+                        const itemData = JSON.parse(decodedText);
+
+                        // Validate that the necessary data exists in the QR code
+                        if (itemData.id && itemData.quantity) {
+                            updateInventory(itemData);  
+                        } else {
+                            console.error("Invalid QR code data.");
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse QR code data:", e);
+                    }
+
+                    qrCodeReader.stop(); 
                 },
                 (errorMessage) => {
-                    // Handle scanning errors
                     console.error(errorMessage);
                 }
             ).catch(err => {
@@ -59,8 +124,11 @@
             });
         }
 
-        // Start scanning when the page loads
         window.onload = () => {
+            const qrReader = document.getElementById('qr-reader');
+            qrReader.style.width = '300px';  
+            qrReader.style.height = '300px';  
+
             startScanner();
         };
     </script>
