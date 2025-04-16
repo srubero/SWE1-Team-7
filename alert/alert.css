@@ -1,4 +1,35 @@
+:root {
+    /* Colors */
+    --color-primary: #4CAF50;
+    --color-primary-dark: #45a049;
+    --color-warning: #ffc107;
+    --color-danger: #f44336;
+    --color-white: #fff;
+    --color-black: #000;
+    --color-gray-100: #f9f9f9;
+    --color-gray-200: #f5f5f5;
+    --color-gray-300: #eee;
+    --color-gray-400: #ddd;
+    --color-gray-500: #666;
+    --color-gray-600: #333;
+    
+    /* Spacing */
+    --spacing-xs: 6px;
+    --spacing-sm: 10px;
+    --spacing-md: 12px;
+    --spacing-lg: 20px;
+    --spacing-xl: 30px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+}
 
+/* Reset styles */
 * {
     margin: 0;
     padding: 0;
@@ -324,4 +355,57 @@ header {
     background-color: #ffebee;
     color: #c62828;
     border: 1px solid #ef9a9a;
+}
+
+.order-history-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.order-history-section h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.order-table-container {
+    overflow-x: auto;
+}
+
+#orderHistoryTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#orderHistoryTable th,
+#orderHistoryTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#orderHistoryTable th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+#orderHistoryTable tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.view-po-btn {
+    padding: 6px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.view-po-btn:hover {
+    background-color: #45a049;
 } 

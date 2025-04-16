@@ -18,6 +18,7 @@
             </div>
         </header>
 
+      
         <div class="tabs-container">
             <ul class="tabs">
                 <li><a href="../addition/addition.html">Manage Items</a></li>
@@ -83,13 +84,6 @@
                 <div id="alertHistory" class="history-list">
                 </div>
             </div>
-
-            <!-- ✅ Reorder Report Section Added -->
-            <div id="reorderReportContainer" style="display: none; margin-top: 20px; padding: 15px; background-color: #f9f9f9; border: 1px solid #ccc; font-family: monospace;">
-                <h3>Reorder Report</h3>
-                <pre id="reorderReport" class="report-box" style="background-color: #fff; padding: 10px; border: 1px dashed #aaa; font-size: 14px; white-space: pre-wrap;"></pre>
-            </div>
-
         </main>
 
         <div id="reorderModal" class="modal">
@@ -112,11 +106,34 @@
             </div>
         </div>
 
+        <section class="order-history-section">
+            <h2>Order History</h2>
+            <div class="order-table-container">
+                <table id="orderHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderHistoryBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <div id="message" class="message"></div>
     </div>
 
+    <!-- Add jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
     <script src="../shared/inventory-data.js"></script>
     <script src="alert.js"></script>
     <script src="../shared/logout-button.js"></script>
 </body>
-</html>
+</html> 
