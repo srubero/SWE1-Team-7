@@ -14,7 +14,7 @@
         <!-- Tabbed Navigation -->
         <div class="tabs-container">
             <ul class="tabs">
-                <li><a href="addition.html" class="active">Add Item</a></li>
+                <li><a href="addition.html" class="active">Manage Items</a></li>
                 <li><a href="../search/search.html">Inventory</a></li>
                 <li><a href="../alert/authenticate/verify.html">Alerts</a></li>
             </ul>
@@ -29,7 +29,15 @@
             </div>
         </div>
         
-        <div class="add-item-section">
+        <div class="operation-selection">
+            <h2>Select Operation</h2>
+            <div class="operation-buttons">
+                <button type="button" id="showAddItem" class="operation-button active">Add Item</button>
+                <button type="button" id="showRemoveItem" class="operation-button">Remove Item</button>
+            </div>
+        </div>
+        
+        <div id="addItemSection" class="operation-section">
             <h2>Add New Item</h2>
             <form id="addItemForm">
                 <div class="form-group">
@@ -59,15 +67,68 @@
                 
                 <div class="form-actions">
                     <button type="submit" id="addButton">Add Item</button>
-                    <button type="button" id="cancelButton">Cancel</button>
+                    <button type="button" id="cancelAddButton">Cancel</button>
                 </div>
             </form>
+        </div>
+        
+        <div id="removeItemSection" class="operation-section" style="display:none;">
+            <h2>Remove Item</h2>
+            <form id="removeItemForm">
+                <div class="form-group">
+                    <label for="searchType">Search by:</label>
+                    <select id="searchType" name="searchType">
+                        <option value="id">ID</option>
+                        <option value="name">Name</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="idSearchGroup">
+                    <label for="removeItemId">Item ID:</label>
+                    <input type="number" id="removeItemId" name="removeItemId" min="1">
+                </div>
+                
+                <div class="form-group" id="nameSearchGroup" style="display:none;">
+                    <label for="removeItemName">Item Name:</label>
+                    <input type="text" id="removeItemName" name="removeItemName">
+                </div>
+                
+                <div class="form-group">
+                    <button type="button" id="searchItemButton">Search</button>
+                </div>
+            </form>
+            
+            <div id="itemDetails" class="item-details" style="display:none;">
+                <h3>Item Details</h3>
+                <p><strong>ID:</strong> <span id="detailId"></span></p>
+                <p><strong>Name:</strong> <span id="detailName"></span></p>
+                <p><strong>Description:</strong> <span id="detailDescription"></span></p>
+                <p><strong>Quantity:</strong> <span id="detailQuantity"></span></p>
+                <p><strong>Price:</strong> $<span id="detailPrice"></span></p>
+                
+                <div class="form-actions">
+                    <button type="button" id="confirmRemoveButton" class="danger-button">Remove Item</button>
+                    <button type="button" id="cancelRemoveButton">Cancel</button>
+                </div>
+            </div>
+            
+            <div id="confirmationDialog" class="confirmation-dialog" style="display:none;">
+                <div class="dialog-content">
+                    <h3>Confirm Deletion</h3>
+                    <p>Are you sure you want to delete this item?</p>
+                    <p><strong><span id="confirmItemName"></span></strong></p>
+                    <div class="dialog-buttons">
+                        <button type="button" id="confirmDeleteButton" class="danger-button">Yes, Delete</button>
+                        <button type="button" id="cancelDeleteButton">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div id="message" class="message"></div>
     </div>
 
-    <!-- Load the shared inventory data first - Updated path -->
+    <!-- Load the shared inventory data first -->
     <script src="../shared/inventory-data.js"></script>
     <script src="addition.js"></script>
     <script src="../shared/logout-button.js"></script>
