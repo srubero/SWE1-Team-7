@@ -98,11 +98,10 @@ class Order {
     }
 }
 
-// Initialize the order manager
+
 window.Order = Order;
 window.orderManager = new Order();
 
-// DOM Event Handlers
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = '../login/login.html';
