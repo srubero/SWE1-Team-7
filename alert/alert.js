@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const isVerified = localStorage.getItem('2faVerified') === 'true';
     const verifiedTime = parseInt(localStorage.getItem('2faVerifiedTime') || '0');
-    const verificationValid = (Date.now() - verifiedTime) < 3600000; // 1 hour
+    const verificationValid = (Date.now() - verifiedTime) < 3600000; 
 
     if (!isVerified || !verificationValid) {
         localStorage.removeItem('2faVerified');
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateHistoryDisplay() {
         alertHistoryList.innerHTML = '';
-        const recentHistory = alertHistoryData.slice(-10).reverse(); // Show last 10 items
+        const recentHistory = alertHistoryData.slice(-10).reverse(); 
 
         if (recentHistory.length === 0) {
             alertHistoryList.innerHTML = '<p>No alert history</p>';
@@ -209,23 +209,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     function generatePurchaseOrderPDF(item, quantity, totalPrice) {
-        // Create new jsPDF instance
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Set font
         doc.setFont("helvetica");
         
-        // Add title
         doc.setFontSize(20);
         doc.text("Purchase Order", 105, 20, { align: "center" });
         
-        // Add date
         doc.setFontSize(12);
         const currentDate = new Date().toLocaleDateString();
         doc.text(`Date: ${currentDate}`, 20, 40);
         
-        // Add order details
         doc.setFontSize(12);
         const startY = 60;
         doc.text("Item Details:", 20, startY);
@@ -235,8 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
         doc.text(`Price per Unit: $${item.price.toFixed(2)}`, 30, startY + 40);
         doc.text(`Total Price: $${totalPrice}`, 30, startY + 50);
         
-        // Add signature line
-        doc.line(20, 180, 100, 180); // Draw a line for signature
+        doc.line(20, 180, 100, 180); 
         doc.text("Authorized Signature", 20, 190);
         
         return doc;
@@ -245,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateOrderHistory() {
         orderHistoryBody.innerHTML = '';
         
-        // Sort orders by date, most recent first
+
         const sortedOrders = [...orderHistory].sort((a, b) => b.date - a.date);
         
         sortedOrders.forEach(order => {
@@ -263,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add this function to handle PO regeneration
     window.regeneratePO = function(itemId, itemName, quantity, pricePerUnit, totalPrice, orderDate) {
         const item = {
             id: itemId,
@@ -286,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const totalPrice = (item.price * quantity).toFixed(2);
 
-        // Create order record
         const orderRecord = {
             date: Date.now(),
             itemId: item.id,
@@ -296,11 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
             totalPrice: totalPrice
         };
 
-        // Add to order history
         orderHistory.push(orderRecord);
         localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
         
-        // Generate and save PDF
         const doc = generatePurchaseOrderPDF(item, quantity, totalPrice);
         doc.save(`PO_${item.name}_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
             
