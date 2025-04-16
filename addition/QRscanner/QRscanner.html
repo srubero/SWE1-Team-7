@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Update</title>
+    <script src="inventory-data.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         body {
@@ -100,7 +101,7 @@
                 (decodedText, decodedResult) => {
                     document.getElementById('result').innerText = `QR Code Detected: ${decodedText}`;
 
-                    // Parse the QR code data (which is a JSON string)
+                    // Parse the QR code data 
                     try {
                         const itemData = JSON.parse(decodedText);
 
