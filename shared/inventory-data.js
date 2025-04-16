@@ -96,6 +96,25 @@ searchItems: function(query) {
 
     return matchedItems;
 },
+ // Order more items if the amount is below threshold
+    orderItems: function(threshold = 10, restockAmount = 20) {
+    const itemsToRestock = inventory.filter(item => item.quantity < threshold);
+
+    if (itemsToRestock.length === 0) {
+        return "All inventory levels are sufficient. No items need restocking.";
+    }
+
+    console.log(`Order Summary:\n`);
+
+    itemsToRestock.forEach(item => {
+        item.quantity += restockAmount;
+        
+        console.log(`${item.name}: amount was below the threshold, ordered ${item.restockAmount} more`); 
+    });
+
+    saveInventory();
+    return itemsToRestock;
+},
 
     
     // Get the next available ID
