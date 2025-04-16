@@ -206,23 +206,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     function processReorder(itemId, quantity) {
-        const item = inventory.find(i => i.id === itemId);
-        if (!item) return;
-
-        item.quantity += quantity;
-        
-        const threshold = thresholds[itemId] || 10;
-        if (item.quantity >= threshold) {
-            const existingAlert = alerts.find(a => a.itemId === itemId && a.status === 'ACTIVE');
-            if (existingAlert) {
-                existingAlert.status = 'RESOLVED';
-                existingAlert.resolvedAt = new Date().toISOString();
+                const item = inventory.find(i => i.id === itemId);
+                if (!item || isNaN(quantity) || quantity <= 0) {
+                    showMessage('Invalid reorder quantity', 'error');
+                    return;
+                }
                 
-                alertHistoryData.push({
-                    action: 'RESOLVED',
-                    itemName: item.name,
-                    timestamp: new Date().toISOString()
-                });
+                const oldQuantity = item.quantity;
+                item.quantity += quantity;
+            
+                
+                const totalPrice = (item.price * quantity).toFixed(2);
+                console.log(`--- Reorder Report ---`);
+                console.log(`Item: ${item.name}`);
+                console.log(`Amount ordered: ${quantity}`);
+                console.log(`Price per unit: $${item.price.toFixed(2)}`);
+                console.log(`Total cost: $${totalPrice}`);
+                console.log(`Quantity before reorder: ${oldQuantity}, after: ${item.quantity}`);
+                console.log(`----------------------`);
+            
+                const threshold = thresholds[itemId] || 10;
+                if (item.quantity >= threshold) {
+                    const existingAlert = alerts.find(a => a.itemId === itemId && a.status === 'ACTIVE');
+                    if (existingAlert) {
+                        existingAlert.status = 'RESOLVED';
+                        existingAlert.resolvedAt = new Date().toISOString();
+            
+                        alertHistoryData.push({
+                            action: 'RESOLVED',
+                            itemName: item.name,
+                            timestamp: new Date().toISOString()
+                        });
             }
         }
 
