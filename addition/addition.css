@@ -167,6 +167,20 @@ button {
     background-color: #e53935;
 }
 
+.QRscanner-button {
+    padding: 12px 24px;
+    border: 1px solid #ddd;
+    background-color: #4CAF50; /* Green color */
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.QRscanner-button:hover {
+    background-color: #45a049; /* Darker green when hovered */
+}
 .danger-button {
     background-color: #f44336;
     color: white;
@@ -258,6 +272,7 @@ button {
     
     .form-actions {
         flex-direction: column;
+        align-items: center;
     }
     
     button {

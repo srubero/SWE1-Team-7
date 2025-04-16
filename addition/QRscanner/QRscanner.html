@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        #qr-reader {
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Scanner</h1>
+
+    <div id="qr-reader" style="width: 500px; height: 500px;"></div>
+
+    <p>Scan a QR code:</p>
+    <div id="result"></div>
+
+    <script>
+        // Initialize the QR scanner
+        const qrCodeReader = new Html5Qrcode("qr-reader");
+
+        // Function to start the scanner
+        function startScanner() {
+            qrCodeReader.start(
+                { facingMode: "environment" },  // Use the rear camera
+                {
+                    fps: 10,  // Frame per second for the camera
+                    qrbox: 250,  // Size of the scanning area
+                },
+                (decodedText, decodedResult) => {
+                    // Display the decoded result
+                    document.getElementById('result').innerText = `QR Code Detected: ${decodedText}`;
+                },
+                (errorMessage) => {
+                    // Handle scanning errors
+                    console.error(errorMessage);
+                }
+            ).catch(err => {
+                console.error("Error starting scanner: ", err);
+            });
+        }
+
+        // Start scanning when the page loads
+        window.onload = () => {
+            startScanner();
+        };
+    </script>
+</body>
+</html>
