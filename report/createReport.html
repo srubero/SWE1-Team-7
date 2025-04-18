@@ -50,8 +50,7 @@
                     }
                 } catch (error) {
                     console.error('Error loading data:', error);
-                    document.getElementById('errorContainer').innerText = 'Failed to load inventory data. Data may be corrupted or missing.';
-                    document.getElementById('errorContainer').style.display = 'block';
+                    alert('Failed to load inventory data. Data may be corrupted or missing.');
                     return; 
                 }
         
