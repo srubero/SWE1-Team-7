@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    //Verifying Login
+    
     if (localStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = '../login/login.html';
         return;
     }
 
-    //Verifying 2 factor authentication
+    
     const isVerified = localStorage.getItem('2faVerified') === 'true';
     const verifiedTime = parseInt(localStorage.getItem('2faVerifiedTime') || '0');
     const verificationValid = (Date.now() - verifiedTime) < 3600000; // 1 hour
@@ -18,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    //Shows dialogue for the webpage
+   
     const itemSelect = document.getElementById('itemSelect');
     const thresholdForm = document.getElementById('thresholdForm');
     const alertsList = document.getElementById('alertsList');
@@ -27,10 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const belowThresholdCount = document.getElementById('belowThreshold');
     const messageDiv = document.getElementById('message');
     const inventoryBody = document.getElementById('inventoryBody');
+    const orderHistoryBody = document.getElementById('orderHistoryBody');
 
+    
     let thresholds = JSON.parse(localStorage.getItem('inventoryThresholds')) || {};
     let alerts = JSON.parse(localStorage.getItem('inventoryAlerts')) || [];
     let alertHistoryData = JSON.parse(localStorage.getItem('alertHistory')) || [];
+    let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
 
     function showMessage(text, type) {
         messageDiv.textContent = text;
@@ -41,10 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     }
 
-    //Displays drop-down menu
+    
     function populateItemSelect() {
         itemSelect.innerHTML = '<option value="">Select an item</option>';
-        inventory.forEach(item => {
+        inventoryData.getAllItems().forEach(item => {
             const option = document.createElement('option');
             option.value = item.id;
             option.textContent = `${item.name} (ID: ${item.id})`;
@@ -52,18 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    //Allows for inventory to be updated
+    
     function updateInventoryTable() {
         inventoryBody.innerHTML = '';
-        inventory.forEach(item => {
+        inventoryData.getAllItems().forEach(item => {
             const threshold = thresholds[item.id] || 10;
-            const status = item.quantity >= threshold ? 'normal' :
-                item.quantity <= threshold / 2 ? 'critical' : 'warning';
+            const quantity = item.quantity !== null && item.quantity !== undefined ? item.quantity : 0;
+            const status = quantity >= threshold ? 'normal' : 
+                          quantity <= threshold / 2 ? 'critical' : 'warning';
 
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${item.name}</td>
-                <td>${item.quantity}</td>
+                <td>${quantity}</td>
                 <td>${threshold}</td>
                 <td><span class="status-indicator status-${status}">${status.toUpperCase()}</span></td>
                 <td>
@@ -74,10 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    //Shows Alerts
+    
     function updateAlertCounts() {
         const activeAlerts = alerts.filter(alert => alert.status === 'ACTIVE').length;
-        const belowThreshold = inventory.filter(item => {
+        const belowThreshold = inventoryData.getAllItems().filter(item => {
             const threshold = thresholds[item.id] || 10;
             return item.quantity < threshold;
         }).length;
@@ -86,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         belowThresholdCount.textContent = belowThreshold;
     }
 
-    //Creates Alerts
+   
     function createAlertElement(alert) {
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert-item ${alert.status.toLowerCase()}`;
@@ -113,11 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return alertDiv;
     }
 
-    //Updates the alerts displayed
+    
     function updateAlertsDisplay() {
         alertsList.innerHTML = '';
         const activeAlerts = alerts.filter(alert => alert.status === 'ACTIVE');
-
+        
         if (activeAlerts.length === 0) {
             alertsList.innerHTML = '<p>No active alerts</p>';
             return;
@@ -127,16 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
             alertsList.appendChild(createAlertElement(alert));
         });
 
+        
         alertsList.querySelectorAll('button').forEach(button => {
             if (!button.hasAttribute('onclick')) {
                 button.addEventListener('click', handleAlertAction);
             }
         });
     }
-    //Saves or updates recent actions 
+
     function updateHistoryDisplay() {
         alertHistoryList.innerHTML = '';
-        const recentHistory = alertHistoryData.slice(-10).reverse();
+        const recentHistory = alertHistoryData.slice(-10).reverse(); // Show last 10 items
 
         if (recentHistory.length === 0) {
             alertHistoryList.innerHTML = '<p>No alert history</p>';
@@ -150,10 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
             alertHistoryList.appendChild(historyItem);
         });
     }
-    //Used when users interact with alerts
+
+    
     function handleAlertAction(e) {
         const alertId = e.target.dataset.id;
-        const action = e.target.className.split('-')[0];
+        const action = e.target.className.split('-')[0]; 
         const alert = alerts.find(a => a.id === alertId);
 
         if (!alert) return;
@@ -161,15 +166,18 @@ document.addEventListener('DOMContentLoaded', () => {
         alert.status = action.toUpperCase();
         alert.actionTimestamp = new Date().toISOString();
 
+       
         alertHistoryData.push({
             action: action.toUpperCase(),
             itemName: alert.itemName,
             timestamp: new Date().toISOString()
         });
 
+      
         localStorage.setItem('inventoryAlerts', JSON.stringify(alerts));
         localStorage.setItem('alertHistory', JSON.stringify(alertHistoryData));
 
+        
         updateAlertsDisplay();
         updateHistoryDisplay();
         updateAlertCounts();
@@ -177,9 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showMessage(`Alert ${action}d successfully`, 'success');
     }
-    //Allows items to be reordered
-    window.handleReorder = function (itemId) {
-        const item = inventory.find(i => i.id === itemId);
+
+   
+    window.handleReorder = function(itemId) {
+        const item = inventoryData.getItemById(itemId);
         if (!item) return;
 
         const modal = document.getElementById('reorderModal');
@@ -196,43 +205,112 @@ document.addEventListener('DOMContentLoaded', () => {
             processReorder(itemId, parseInt(quantityInput.value));
             modal.style.display = 'none';
         };
+    }
+
+    
+    function generatePurchaseOrderPDF(item, quantity, totalPrice) {
+        // Create new jsPDF instance
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Set font
+        doc.setFont("helvetica");
+        
+        // Add title
+        doc.setFontSize(20);
+        doc.text("Purchase Order", 105, 20, { align: "center" });
+        
+        // Add date
+        doc.setFontSize(12);
+        const currentDate = new Date().toLocaleDateString();
+        doc.text(`Date: ${currentDate}`, 20, 40);
+        
+        // Add order details
+        doc.setFontSize(12);
+        const startY = 60;
+        doc.text("Item Details:", 20, startY);
+        doc.text(`Item Name: ${item.name}`, 30, startY + 10);
+        doc.text(`Item ID: ${item.id}`, 30, startY + 20);
+        doc.text(`Quantity Ordered: ${quantity}`, 30, startY + 30);
+        doc.text(`Price per Unit: $${item.price.toFixed(2)}`, 30, startY + 40);
+        doc.text(`Total Price: $${totalPrice}`, 30, startY + 50);
+        
+        // Add signature line
+        doc.line(20, 180, 100, 180); // Draw a line for signature
+        doc.text("Authorized Signature", 20, 190);
+        
+        return doc;
+    }
+
+    function updateOrderHistory() {
+        orderHistoryBody.innerHTML = '';
+        
+        // Sort orders by date, most recent first
+        const sortedOrders = [...orderHistory].sort((a, b) => b.date - a.date);
+        
+        sortedOrders.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(order.date).toLocaleDateString()}</td>
+                <td>${order.itemName}</td>
+                <td>${order.quantity}</td>
+                <td>$${order.totalPrice}</td>
+                <td>
+                    <button class="view-po-btn" onclick="regeneratePO(${order.itemId}, '${order.itemName}', ${order.quantity}, ${order.pricePerUnit}, ${order.totalPrice}, ${order.date})">View PO</button>
+                </td>
+            `;
+            orderHistoryBody.appendChild(row);
+        });
+    }
+
+    // Add this function to handle PO regeneration
+    window.regeneratePO = function(itemId, itemName, quantity, pricePerUnit, totalPrice, orderDate) {
+        const item = {
+            id: itemId,
+            name: itemName,
+            price: pricePerUnit
+        };
+        const doc = generatePurchaseOrderPDF(item, quantity, totalPrice);
+        doc.save(`PO_${itemName}_${new Date(orderDate).toLocaleDateString().replace(/\//g, '-')}.pdf`);
     };
-    //Validates the users reorder request
+
     function processReorder(itemId, quantity) {
-        const item = inventory.find(i => i.id === itemId);
+        const item = inventoryData.getItemById(itemId);
         if (!item || isNaN(quantity) || quantity <= 0) {
             showMessage('Invalid reorder quantity', 'error');
             return;
         }
-
+        
         const oldQuantity = item.quantity;
-        item.quantity += quantity;
+        const updatedItem = inventoryData.updateItem(itemId, { quantity: item.quantity + quantity });
+        
         const totalPrice = (item.price * quantity).toFixed(2);
 
-        // Display report for reorder once completed
-        const report =
-        `--- Reorder Report ---
-        Item: ${item.name}
-        Amount ordered: ${quantity}
-        Price per unit: $${item.price.toFixed(2)}
-        Total cost: $${totalPrice}
-        Quantity before reorder: ${oldQuantity}, after: ${item.quantity}
-        ----------------------`;
+        // Create order record
+        const orderRecord = {
+            date: Date.now(),
+            itemId: item.id,
+            itemName: item.name,
+            quantity: quantity,
+            pricePerUnit: item.price,
+            totalPrice: totalPrice
+        };
 
-        console.log(report);
-
-        const reportBox = document.getElementById('reorderReport');
-        const reportContainer = document.getElementById('reorderReportContainer');
-        reportBox.textContent = report;
-        reportContainer.style.display = 'block';
-
+        // Add to order history
+        orderHistory.push(orderRecord);
+        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+        
+        // Generate and save PDF
+        const doc = generatePurchaseOrderPDF(item, quantity, totalPrice);
+        doc.save(`PO_${item.name}_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
+            
         const threshold = thresholds[itemId] || 10;
-        if (item.quantity >= threshold) {
+        if (updatedItem.quantity >= threshold) {
             const existingAlert = alerts.find(a => a.itemId === itemId && a.status === 'ACTIVE');
             if (existingAlert) {
                 existingAlert.status = 'RESOLVED';
                 existingAlert.resolvedAt = new Date().toISOString();
-
+            
                 alertHistoryData.push({
                     action: 'RESOLVED',
                     itemName: item.name,
@@ -248,16 +326,18 @@ document.addEventListener('DOMContentLoaded', () => {
         updateHistoryDisplay();
         updateAlertCounts();
         updateInventoryTable();
+        updateOrderHistory();
 
         showMessage(`Reorder processed successfully`, 'success');
     }
 
-    //Shows if any items in inventory or below the threshold
+    
     function checkInventoryLevels() {
-        inventory.forEach(item => {
+        inventoryData.getAllItems().forEach(item => {
             const threshold = thresholds[item.id] || 10;
             if (item.quantity < threshold) {
-                const existingAlert = alerts.find(a =>
+                
+                const existingAlert = alerts.find(a => 
                     a.itemId === item.id && a.status === 'ACTIVE'
                 );
 
@@ -282,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateInventoryTable();
     }
 
-    //Allows the threshold to be edited by user
+    
     thresholdForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const itemId = itemSelect.value;
@@ -299,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
         checkInventoryLevels();
     });
 
-    //The Extra buttons used for different actions on the page
+  
     document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.clear();
         window.location.href = '../login/login.html';
@@ -316,13 +396,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+  
     populateItemSelect();
     updateInventoryTable();
     updateAlertsDisplay();
     updateHistoryDisplay();
     updateAlertCounts();
+    updateOrderHistory();
     checkInventoryLevels();
 
-    //Sets a timer to check inventory levels every 12 hours
-    setInterval(checkInventoryLevels, 43200000);
-});
+    setInterval(checkInventoryLevels, 43200000); 
+}); 
+
